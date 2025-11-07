@@ -1,0 +1,32 @@
+{
+  "name": "UserFavorite",
+  "type": "object",
+  "properties": {
+    "location_id": {
+      "type": "string",
+      "description": "ID of the favorited anime location"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Personal notes about the location"
+    },
+    "visit_status": {
+      "type": "string",
+      "enum": [
+        "want_to_visit",
+        "visited",
+        "planning"
+      ],
+      "default": "want_to_visit",
+      "description": "User's visit status for this location"
+    },
+    "visit_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when visited (if applicable)"
+    }
+  },
+  "required": [
+    "location_id"
+  ]
+}

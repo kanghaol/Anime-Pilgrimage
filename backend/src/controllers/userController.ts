@@ -1,0 +1,73 @@
+import { Request, Response } from "express";
+import { User } from "../models/User";
+import { Anime } from "../models/Anime";
+
+export const getUserFavorites = async (req: Request, res: Response) => {
+    try {
+        const userUuid = (req as any).user.uuId;
+        const user = await User.findOne({ uuId: userUuid });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const favoritesIds = user.favorites;
+        const favoriteAnimes = await Anime.find({ anime_id: { $in: favoritesIds } });
+
+        res.status(200).json({ favorites: favoriteAnimes});
+    } catch (err) {
+        res.status(500).json({ message: "Error retrieving favorites" });
+    }
+}
+
+export const toggleFavoriteAnime = async (req: Request, res: Response) => {
+    try { 
+        const userUuid = (req as any).user.uuId;
+        const animeId = req.params.anime_id;
+        const user = await User.findOne({ uuId: userUuid });
+        const anime = await Anime.findOne({ anime_id: animeId });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (!animeId) {
+            return res.status(400).json({ message: "Anime ID is required" });
+        }
+        const index = user.favorites.indexOf(animeId);
+        if (index > -1) {
+            user.favorites.splice(index, 1);
+            await user.save();
+            if (anime && anime.favorite_count > 0) {
+                anime.favorite_count -= 1;
+                await anime.save();
+            } 
+            return res.status(200).json({ message: "Anime removed from favorites" });
+        } else {
+            user.favorites.push(animeId);
+            await user.save();
+            if (anime) {
+                anime.favorite_count += 1;
+                await anime.save();
+            }
+            return res.status(200).json({ message: "Anime added to favorites" });
+        }
+
+    } catch (err) {
+        res.status(500).json({ message: "Error toggling favorite anime" });
+    }
+}
+
+export const getUserProfile = async (req: Request, res: Response) => {
+    try {
+        const userUuid = (req as any).user.uuId;
+        const user = await User.findOne({ uuId: userUuid });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ 
+            email: user.email,
+            name: user.name,
+            favorites : user.favorites.length,
+            message: "User profile retrieved successfully"
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Error retrieving user profile" });
+    }
+};

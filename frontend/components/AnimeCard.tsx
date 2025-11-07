@@ -1,0 +1,95 @@
+import { Link } from 'expo-router';
+import { ChevronRight, MapPin, Star } from "lucide-react-native";
+import { MotiView } from "moti";
+import React from "react";
+import { Image, Pressable, Text, View } from "react-native";
+
+type Anime ={
+    id: string;
+    title: string;
+    studio?: string;
+    poster_url?: string;
+}
+type AnimeCardProps ={
+    anime: Anime;
+    isFavorite: boolean;
+    onToggleFavorite: (id: string) => void;
+    locationCount: number;
+}
+
+export default function AnimeCard({
+    anime,
+    isFavorite, 
+    onToggleFavorite, 
+    locationCount, }:AnimeCardProps){
+        return(
+            <MotiView
+                from={{ opacity: 0, translateY: 20 }}
+                animate={{ opacity: 1, translateY: 0 }}
+                transition={{ duration: 500 }}
+                className="mb-3"
+            >
+                <Link href={{ pathname: "/(tabs)/animeDetail", params: {id:anime.id}}} asChild>
+                    <Pressable className="flex-row p-3 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                        {/* Poster Image */}
+                        <View className="w-24 h-32 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 mr-3">
+                            {anime.poster_url ?(
+                                <Image
+                                    source={{ uri: anime.poster_url }}
+                                    resizeMode="cover"
+                                    className="w-full h-full"
+                                />
+                            ):(
+                                <View className="flex-1 items-center justify-center">
+                                    <Text className="text-3xl">No Image</Text>
+                                </View>
+                            )}
+                        </View>
+                        {/* Anime Info */}
+                        <View className="flex-1 justify-between">
+                            <View>
+                                <Text className="text-lg font-bold text-text dark:text-darkText mb-1" numberOfLines={2}>
+                                    {anime.title}
+                                </Text>
+                                {anime.studio ?(
+                                    <Text className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                        {anime.studio}
+                                    </Text>
+                                ): null}
+                                {locationCount > 0 && (
+                                    <View className="flex-row items-center">
+                                        <MapPin size={14} color="#6366F1" />
+                                        <Text className="text-indigo-600 dark:text-purple-400 font-medium text-sm ml-1">
+                                            {locationCount} locations
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>         
+                        </View>
+                        {/* Favorite Icon */}
+                        <View className=" justify-between items-end ml-2">
+                            <Pressable onPress={(e) => {
+                                e.preventDefault();
+                                onToggleFavorite(anime.id);
+                            }}
+                            className="p-2 rounded-full"
+                            >
+                                <Star size={20} color={isFavorite ? "#ec4899" : "#d1d5db"} fill={isFavorite ? "#ec4899" : "none"} />
+                            </Pressable>
+                            {/* Map button */}
+                            <Link href={{ pathname: "/(tabs)/map", params: { animeId: anime.id } }} asChild>
+                                <Pressable onPress={(e) => e.stopPropagation()}
+                                    className="p-2 rounded-full">
+                                    <ChevronRight 
+                                        size={22} 
+                                        color="#9ca3af" 
+                                        className="group-hover: text-indigo-600"
+                                    />
+                                </Pressable>
+                            </Link>
+                        </View>
+                    </Pressable>
+                </Link>
+            </MotiView>
+        );
+    }
