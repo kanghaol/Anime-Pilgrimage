@@ -6,12 +6,8 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.get("/verify", verifyToken);
-router.post("/logout", logoutUser);
+router.get("/verify", authMiddleware, verifyToken);
+router.post("/logout", authMiddleware, logoutUser);
 
-
-router.get("/protected", authMiddleware, (req, res) => {
-  res.json({ message: "You are authenticated!", user: (req as any).user });
-});
 
 export default router;

@@ -15,4 +15,4 @@ const userSchema = new mongoose.Schema({
 
 userSchema.index({ uuId: 1 }, { unique: true });
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema, "userCollection");

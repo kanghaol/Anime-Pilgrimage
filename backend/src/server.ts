@@ -5,6 +5,7 @@ import { connectDB } from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import animeRoutes from "./routes/animeRoutes";
+import locationRoutes from "./routes/locationRoutes";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.get("/", (_, res) => res.send("Anime Pilgrimage API is running "));
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/anime", animeRoutes);
+app.use("/api/locations", locationRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(` Server running on port ${PORT}`));

@@ -6,15 +6,13 @@ const LocationSchema = new mongoose.Schema({
     name: String,
     address: String,
     place: String,
-    coordinates: [Number],
+    coordinates: [Number], // [longitude, latitude]
     description: String,
     photo_url: String,
-    scene_ref: String,
-    nearest_station: { type: String, default: null },
-    access_info: { type: String, default: null },
+    scene_ref: [String],
     travel_tips: { type: String, default: null },
 });
 
 LocationSchema.index({ location_id: 1 }, { unique: true });
 
-export const Location = mongoose.model("Location", LocationSchema);
+export const Location = mongoose.model("Location", LocationSchema, "locationCollection");

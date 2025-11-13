@@ -6,5 +6,4 @@ const router = express.Router();
 
 router.get("/AnimeList", getAnimeList);
 
-
 export default router;

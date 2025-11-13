@@ -4,35 +4,33 @@ import mongoose from "mongoose";
 
 export const getAnimeList = async (req: Request, res: Response) => {
     try {
-        const limit = 20;
-        const cursorPopularity = parseFloat(req.query.popularity as string);
+        const limit = 10;
+        const cursorPopularity = req.query.popularity
+            ? Number(req.query.popularity)
+            : undefined;
         const cursorId = req.query.id as string | undefined;
 
         const query: any = {};
-        if (cursorPopularity && cursorId && mongoose.Types.ObjectId.isValid(cursorId)) {
-            query.$or = [
-                { popularity: { $lt: cursorPopularity } },
-                { popularity: cursorPopularity, _id: { $gt: new mongoose.Types.ObjectId(cursorId) } },
-            ];
+
+        if (cursorPopularity != null && cursorId && mongoose.Types.ObjectId.isValid(cursorId)) {
+            query.popularity = { $lt: cursorPopularity };
+            query._id = { $gt: cursorId };
         }
 
         const animeList = await Anime.find(query)
             .sort({ popularity: -1, _id: 1 })
             .limit(limit);
-             
-        let nextCursor: string | null = null;
-        if (animeList.length === limit) {
-            const lastitem = animeList.at(-1);
-            if (lastitem !== undefined && lastitem._id) {
-                nextCursor = lastitem._id.toString();
-            }
-        } else {
-            nextCursor = null;
-        }
-        
-        res.json({ animeList, nextCursor, hasMore: !!nextCursor });
 
+        const lastItem = animeList.at(-1);
+
+        res.json({
+            animeList,
+            nextCursor: lastItem ? lastItem._id.toString() : null,
+            nextPopularity: lastItem ? lastItem.popularity : null,
+            hasMore: animeList.length === limit,
+        });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Error fetching anime list" });
     }
-}
+};

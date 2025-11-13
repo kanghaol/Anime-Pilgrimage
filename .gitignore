@@ -45,3 +45,5 @@ app-example
 /android
 
 .env
+.animeCollection.json
+.locationCollection.json
