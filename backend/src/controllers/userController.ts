@@ -34,8 +34,8 @@ export const toggleFavoriteAnime = async (req: Request, res: Response) => {
         if (index > -1) {
             user.favorites.splice(index, 1);
             await user.save();
-            if (anime && anime.favorite_count > 0) {
-                anime.favorite_count -= 1;
+            if (anime && anime.favoriteCount > 0) {
+                anime.favoriteCount -= 1;
                 await anime.save();
             } 
             return res.status(200).json({ message: "Anime removed from favorites" });
@@ -43,7 +43,7 @@ export const toggleFavoriteAnime = async (req: Request, res: Response) => {
             user.favorites.push(animeId);
             await user.save();
             if (anime) {
-                anime.favorite_count += 1;
+                anime.favoriteCount += 1;
                 await anime.save();
             }
             return res.status(200).json({ message: "Anime added to favorites" });
