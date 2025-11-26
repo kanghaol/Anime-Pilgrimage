@@ -61,7 +61,7 @@ export default function Login() {
             }
         }
         // delete old real token if exists
-        guestLogin(guestId);
+        await guestLogin(guestId);
         router.replace("/(tabs)");
     };
 

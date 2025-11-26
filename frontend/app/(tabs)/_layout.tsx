@@ -2,6 +2,8 @@ import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { Redirect } from 'expo-router';
 
 export default function TabLayout() {
   // Hardcoded colors from your tailwind.config.js
@@ -10,8 +12,13 @@ export default function TabLayout() {
   const lightActive = "#0EB8F0";          // primary
   const darkActive = "#FFFFFF";            // darkPrimary
 
-  const isDark = true; // Change to true if you want to default dark mode
-
+  const isDark = false; // Change to true if you want to default dark mode
+  const { isLoggedIn } = useAuth();
+  
+  if (!isLoggedIn) {
+    return <Redirect href="/login" />;
+  }
+  
   return (
     <Tabs
       screenOptions={{

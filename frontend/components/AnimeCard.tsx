@@ -8,20 +8,20 @@ type Anime ={
     id: string;
     title: string;
     studio?: string;
-    poster_url?: string;
+    photo_url?: string;
 }
 type AnimeCardProps ={
     anime: Anime;
     isFavorite: boolean;
     onToggleFavorite: (id: string) => void;
-    locationCount: number;
+    locations: number;
 }
 
 export default function AnimeCard({
     anime,
     isFavorite, 
     onToggleFavorite, 
-    locationCount, }:AnimeCardProps){
+    locations, }:AnimeCardProps){
         return(
             <MotiView
                 from={{ opacity: 0, translateY: 20 }}
@@ -33,9 +33,9 @@ export default function AnimeCard({
                     <Pressable className="flex-row p-3 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                         {/* Poster Image */}
                         <View className="w-24 h-32 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 mr-3">
-                            {anime.poster_url ?(
+                            {anime.photo_url ?(
                                 <Image
-                                    source={{ uri: anime.poster_url }}
+                                    source={{ uri: anime.photo_url }}
                                     resizeMode="cover"
                                     className="w-full h-full"
                                 />
@@ -56,11 +56,11 @@ export default function AnimeCard({
                                         {anime.studio}
                                     </Text>
                                 ): null}
-                                {locationCount > 0 && (
+                                {locations > 0 && (
                                     <View className="flex-row items-center">
                                         <MapPin size={14} color="#6366F1" />
                                         <Text className="text-indigo-600 dark:text-purple-400 font-medium text-sm ml-1">
-                                            {locationCount} locations
+                                            {locations} locations
                                         </Text>
                                     </View>
                                 )}

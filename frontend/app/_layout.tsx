@@ -1,29 +1,39 @@
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import 'react-native-reanimated';
+// app/_layout.tsx
+import { Stack } from "expo-router";
+import { AuthProvider, useAuth } from "../hooks/useAuth";
+import Splash from "@/components/ui/Splash";
 import './globals.css';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+function RootNavigator() {
+  const { isLoggedIn } = useAuth();
 
-export default function RootLayout() {
-  // Manual dark mode state
-  const [darkMode, setDarkMode] = useState(false);
+  if (isLoggedIn === null) {
+    return <Splash/>; // loading
+  }
 
   return (
-    <View className={darkMode ? 'dark flex-1' : 'flex-1'}>
-      <Stack>
+    <Stack>
+      {/* Logged-in or guest users */}
+      <Stack.Protected guard={isLoggedIn}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: 'modal', title: 'Modal' }}
-        />
-      </Stack>
+      </Stack.Protected>
 
-      <StatusBar style="auto" />
-    </View>
+      
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="login" options={{ headerShown: true }} />
+      </Stack.Protected>
+
+      <Stack>
+        <Stack.Screen name="register" options={{ headerShown: false }} />
+      </Stack>
+    </Stack>
+  );
+}
+
+export default function Layout() {
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
   );
 }
