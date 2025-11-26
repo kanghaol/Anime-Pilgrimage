@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
     uuId: { type: String, required: true },
     email: { type: String, required: true },
-    authType: { type: String, required: true },
+    authType: { type: String, default: "local" }, 
     providerId: String,
     name: String,
     passwordHash: {type: String, default: null,},

@@ -8,17 +8,23 @@ export const getAnimeList = async (req: Request, res: Response) => {
         const cursorPopularity = req.query.popularity
             ? Number(req.query.popularity)
             : undefined;
-        const cursorId = req.query.id as string | undefined;
+        const _id = req.query.id as string | undefined;
 
         const query: any = {};
 
-        if (cursorPopularity != null && cursorId && mongoose.Types.ObjectId.isValid(cursorId)) {
-            query.popularity = { $lt: cursorPopularity };
-            query._id = { $gt: cursorId };
+        if (cursorPopularity != null && _id && mongoose.Types.ObjectId.isValid(_id)) {
+            
+            query.$or = [
+                { popularity: { $lt: cursorPopularity } },
+                { 
+                    popularity: cursorPopularity,
+                    _id: { $lt: new mongoose.Types.ObjectId(_id) }
+                }
+            ];
         }
 
         const animeList = await Anime.find(query)
-            .sort({ popularity: -1, _id: 1 })
+            .sort({ popularity: -1, _id: -1 })
             .limit(limit);
 
         const lastItem = animeList.at(-1);

@@ -71,3 +71,29 @@ export const getUserProfile = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Error retrieving user profile" });
     }
 };
+
+export const migrateGuestUser = async (req: Request, res: Response) => {
+    try {
+        const userUuid = (req as any).user.uuId;
+        const user = await User.findOne({ uuId: userUuid });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const favorites = req.body.favorites;
+        if (!Array.isArray(favorites)) {
+            return res.status(400).json({ message: "Invalid favorites data" });
+        }
+        user.favorites = Array.from(new Set([...user.favorites, ...favorites]));
+        await user.save();
+        res.status(200).json({ message: "Guest favorites migrated successfully" });
+        for (const animeId of favorites) {
+            const anime = await Anime.findOne({ anime_id: animeId });
+            if (anime) {
+                anime.favoriteCount += 1;
+                await anime.save();
+            }
+        }
+    } catch (err) {
+        res.status(500).json({ message: "Error migrating guest user" });
+    }
+}

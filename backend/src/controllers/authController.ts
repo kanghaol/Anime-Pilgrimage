@@ -17,10 +17,10 @@ export const registerUser = async (req: Request, res: Response) => {
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
 
     const hash = await bcrypt.hash(password, 10);
-
+    const normalizedEmail = email.trim().toLowerCase();
     const newUser = await User.create({
       uuId: uuidv4(),
-      email: email,
+      email: normalizedEmail,
       name: name,
       passwordHash: hash,
     });
@@ -34,7 +34,7 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(201).json({
       message: "Account created successfully",
       token,
-      user: { uuId: newUser.uuId, email, name },
+      user: { uuId: newUser.uuId, normalizedEmail, name },
     });
   } catch (err) {
     res.status(500).json({ message: "Error registering user" });
@@ -48,7 +48,8 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
-    const user = await User.findOne({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ normalizedEmail });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
