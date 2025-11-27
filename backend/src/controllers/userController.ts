@@ -16,12 +16,26 @@ export const getUserFavorites = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ message: "Error retrieving favorites" });
     }
-}
+};
+
+export const getUserFavoritesIds = async (req: Request, res: Response) => {
+    try {
+        const userUuid = (req as any).user.uuId;
+        const user = await User.findOne({ uuId: userUuid });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const favoritesIds = user.favorites;
+        res.status(200).json({ favorites: favoritesIds });
+    } catch (err) {
+        res.status(500).json({ message: "Error retrieving favorite IDs" });
+    }
+};
 
 export const toggleFavoriteAnime = async (req: Request, res: Response) => {
     try { 
         const userUuid = (req as any).user.uuId;
-        const animeId = req.params.anime_id;
+        const animeId = req.body.favorites;
         const user = await User.findOne({ uuId: userUuid });
         const anime = await Anime.findOne({ anime_id: animeId });
         if (!user) {
@@ -52,7 +66,7 @@ export const toggleFavoriteAnime = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ message: "Error toggling favorite anime" });
     }
-}
+};
 
 export const getUserProfile = async (req: Request, res: Response) => {
     try {
@@ -96,4 +110,4 @@ export const migrateGuestUser = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ message: "Error migrating guest user" });
     }
-}
+};

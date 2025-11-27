@@ -49,7 +49,7 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
     const normalizedEmail = email.trim().toLowerCase();
-    const user = await User.findOne({ normalizedEmail });
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
