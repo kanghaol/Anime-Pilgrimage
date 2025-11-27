@@ -50,11 +50,11 @@ export default function Register() {
                 if(stored){
                     const favorites = JSON.parse(stored);
 
-                    await fetch(`${API_BASE}/user/migrate-favorites`, {
+                    await fetch(`${API_BASE}/user/migrate-guest`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
-                            authorization: `Bearer ${data.token}`,
+                            Authorization: `Bearer ${data.token}`,
                         },
                         body: JSON.stringify({favorites}),
                     })

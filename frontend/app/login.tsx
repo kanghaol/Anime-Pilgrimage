@@ -5,16 +5,20 @@ import { MotiView } from "moti";
 import { useAuth } from "../hooks/useAuth"
 import * as SecureStore from "expo-secure-store";
 import uuid from "react-native-uuid"
+import { Redirect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 const API_BASE = "http://192.168.0.152:5000/api"
 
 export default function Login() {
-    const { login, guestLogin } = useAuth();
+    const { login, guestLogin, isLoggedIn, isGuest} = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
+    if (isLoggedIn || isGuest) {
+        return <Redirect href="/" />;
+    }
     const handleLogin = async () => {
         if (!email || !password) {
             return Alert.alert("missing fields")

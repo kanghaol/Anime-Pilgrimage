@@ -13,9 +13,9 @@ export default function TabLayout() {
   const darkActive = "#FFFFFF";            // darkPrimary
 
   const isDark = false; // Change to true if you want to default dark mode
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isGuest } = useAuth();
   
-  if (!isLoggedIn) {
+  if (!isLoggedIn && !isGuest) {
     return <Redirect href="/login" />;
   }
   
