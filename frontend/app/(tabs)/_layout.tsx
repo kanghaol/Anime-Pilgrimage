@@ -2,8 +2,10 @@ import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Alert } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
-import { Redirect } from 'expo-router';
+import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 export default function TabLayout() {
   // Hardcoded colors from your tailwind.config.js
@@ -13,12 +15,8 @@ export default function TabLayout() {
   const darkActive = "#FFFFFF";            // darkPrimary
 
   const isDark = false; // Change to true if you want to default dark mode
-  const { isLoggedIn, isGuest } = useAuth();
-  
-  if (!isLoggedIn && !isGuest) {
-    return <Redirect href="/login" />;
-  }
-  
+  const { isGuest } = useAuth();
+
   return (
     <Tabs
       screenOptions={{
@@ -32,6 +30,7 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
       }}
     >
+      <StatusBar style="auto"/>
       <Tabs.Screen
         name="index"
         options={{
@@ -49,15 +48,33 @@ export default function TabLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title:'Favorites',
-          tabBarIcon:({ color }) => <IconSymbol size={24} name="heart.fill" color={color} />,
+          title: 'Favorites',
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="heart.fill" color={color} />
+          ),
+        }}
+        listeners={{
+          tabPress: e => {
+            if (isGuest) {
+              e.preventDefault(); 
+              Alert.alert(
+                "Warning",
+                "Favorites are only saved permanently for registered users.",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  { text: "Register", onPress: () => router.replace("/register") },
+                  { text: "Login", onPress: () => router.replace("/login") },
+                ]
+              );
+            }
+          },
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title:'Profile',
-          tabBarIcon:({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
         }}
       />
     </Tabs>

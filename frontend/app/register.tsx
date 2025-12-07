@@ -121,7 +121,7 @@ export default function Register() {
                     <Text className="text-subtext dark:text-darkSubtext">
                         Already have an account? 
                     </Text>
-                    <Link href={"/login" as any} asChild>
+                    <Link href="/login" asChild>
                         <Pressable>
                             <Text className="text-primary dark:text-darkPrimary font-semibold mt-3 text-3xl">
                                 Login

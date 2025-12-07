@@ -4,27 +4,31 @@ import { Link } from "expo-router";
 import { Search, Sparkles, TrendingUp, User } from "lucide-react-native";
 import { MotiView } from "moti";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from '@/hooks/useAuth';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from "expo-secure-store";
+import { useAuth } from "@/hooks/useAuth";
+import { useFavorites } from "@/hooks/useFavorites";
+import { router } from "expo-router";
 import AnimeCard from "@/components/AnimeCard";
 
-const API_BASE = "http://192.168.0.152:5000/api"
+const API_BASE = "http://192.168.0.152:5000/api";
 
 export default function Home() {
   const [animeList, setAnimeList] = useState<any[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [nextPopularity, setNextPopularity] = useState<number | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const { isGuest, isLoggedIn } = useAuth();
 
+  const { isGuest, logout, isLoggedIn } = useAuth();
+  const { favorites, toggleFavorite } = useFavorites();
+
+  // if (!isLoggedIn && !isGuest) {
+  //   return <Redirect href="/login" />;
+  // }
+  
   const fetchAnimeList = async (cursorId?: string, cursorPopularity?: number) => {
     try {
       const url = new URL(`${API_BASE}/anime/AnimeList`);
-
       if (cursorId) url.searchParams.append("id", cursorId);
       if (cursorPopularity !== undefined)
         url.searchParams.append("popularity", cursorPopularity.toString());
@@ -41,7 +45,6 @@ export default function Home() {
         cursorId ? [...prev, ...data.animeList] : data.animeList
       );
 
-      // Save cursors for future pagination
       setNextCursor(data.nextCursor);
       setNextPopularity(data.nextPopularity);
       setHasMore(data.hasMore);
@@ -52,9 +55,15 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (!isLoggedIn && !isGuest) {
+      router.replace("/login");
+    } 
+  }, [isLoggedIn, isGuest]);
+
   const loadMoreAnime = async () => {
-    if (!hasMore) return; // No more data
-    if (!nextCursor || nextPopularity === null) return; // No cursor available
+    if (!hasMore) return;
+    if (!nextCursor || nextPopularity === null) return;
     try {
       setLoadingMore(true);
       await fetchAnimeList(nextCursor, nextPopularity);
@@ -64,77 +73,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchAnimeList(); // Initial load
+    fetchAnimeList();
   }, []);
-
-  useEffect(() => {
-    const loadFavorites = async () => {
-      if (isGuest) {
-        // Load from local storage for guest accounts
-        const guestId = await SecureStore.getItemAsync("guest_token");
-        const FAVORITES_KEY = `guest_favorites_${guestId}`;
-        const storedFavorites = await AsyncStorage.getItem(FAVORITES_KEY);
-        if (storedFavorites) {
-          setFavorites(JSON.parse(storedFavorites));
-        } 
-      } else {
-        // Load from backend for user accounts
-        const token = await SecureStore.getItemAsync("token");
-        const res = await fetch(`${API_BASE}/user/favorites/ids`,{
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.favorites.length === 0) {
-            setFavorites([]);
-          }
-          setFavorites(data.favorites);
-        } else if (res.status === 403){
-          logout();
-        } else {
-          console.error("Failed to load favorites from backend");
-        }
-      }
-    }
-    loadFavorites();
-  }, [isGuest]);
-
-  //testing logout remove later
-  const logout = useAuth().logout;
-
-  const toggleFavorite = async (id: string) => {
-    console.log("Toggling favorite:", id);
-    const token = await SecureStore.getItemAsync("token");
-    const guestId = await SecureStore.getItemAsync("guest_token");
-    const FAVORITES_KEY = `guest_favorites_${guestId}`;
-    setFavorites((prev) => {
-      const updated = prev.includes(id)
-        ? prev.filter((f) => f !== id)
-        : [...prev, id];
-
-      if (isGuest) {
-        console.log("local favorite:", id);
-        // Save locally for guest accounts
-        AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
-      } else {
-        // Save to backend for user accounts
-        console.log("saving favorite to backend:", id);
-        fetch(`${API_BASE}/user/toggleFavorite`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, 
-          },
-          body: JSON.stringify({ favorites: id }),
-        }).catch((err) => console.error("Backend save failed:", err));
-      }
-
-      return updated;
-    });
-  };
-
 
   if (loading) {
     return (
@@ -146,18 +86,26 @@ export default function Home() {
   }
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-background dark:bg-darkBackground">
+    <SafeAreaView
+      edges={["top", "left", "right"]}
+      className="flex-1 bg-background dark:bg-darkBackground"
+    >
       {/* Header */}
       <View className="bg-primary dark:bg-darkBackground px-6 py-4">
         <View className="flex-row justify-between items-center mb-4">
           <View className="flex-row items-center gap-2">
             <Sparkles color="#FFFFFF" size={24} />
-            <Text className="text-primary dark:text-darkPrimary text-2xl font-bold">Anime Pilgrimage</Text>
+            <Text className="text-text dark:text-darkText text-2xl font-bold">
+              Anime Pilgrimage
+            </Text>
           </View>
 
           {/* Profile */}
           <Link href="/profile" asChild>
-            <Pressable className="w-10 h-10 bg-white/20 dark:bg-darkPrimary rounded-full justify-center items-center" onPress={logout}>
+            <Pressable
+              className="w-10 h-10 bg-white/20 dark:bg-darkPrimary rounded-full justify-center items-center"
+              onPress={logout}
+            >
               <User color="white" size={20} />
             </Pressable>
           </Link>
@@ -175,7 +123,9 @@ export default function Home() {
       {/* Section title */}
       <View className="px-6 mt-1 flex-row items-center gap-2">
         <TrendingUp color="#6366F1" size={20} />
-        <Text className="text-xl font-semibold text-text dark:text-darkText">Explore Popular Series</Text>
+        <Text className="text-xl font-semibold text-text dark:text-darkText">
+          Explore Popular Series
+        </Text>
       </View>
 
       {/* Anime List */}
@@ -187,12 +137,17 @@ export default function Home() {
           <MotiView
             from={{ opacity: 0, translateY: 40, scale: 0.95 }}
             animate={{ opacity: 1, translateY: 0, scale: 1 }}
-            transition={{ type: 'spring', damping: 15, stiffness: 120, delay: index * 100 }}
+            transition={{
+              type: "spring",
+              damping: 15,
+              stiffness: 120,
+              delay: index * 100,
+            }}
           >
             <AnimeCard
               anime={item}
               isFavorite={favorites.includes(item.anime_id)}
-              onToggleFavorite={toggleFavorite}
+              onToggleFavorite={() => toggleFavorite(item.anime_id, isGuest)}
               locations={item.locations}
             />
           </MotiView>
@@ -202,7 +157,6 @@ export default function Home() {
             {hasMore ? (
               <Pressable
                 onPress={loadMoreAnime}
-                // disabled={loadingMore}
                 className="bg-primary px-6 py-3 rounded-full"
               >
                 <Text className="text-white text-center text-base font-semibold">

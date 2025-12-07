@@ -29,7 +29,7 @@ export default function AnimeCard({
                 transition={{ duration: 500 }}
                 className="mb-3"
             >
-                <Link href={{ pathname: "/(tabs)/animeDetail", params: {id:anime.anime_id}}} asChild>
+                <Link href={{ pathname: "/animeDetail/[id]", params: {id:anime.anime_id}}} push asChild>
                     <Pressable className="flex-row p-3 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                         {/* Poster Image */}
                         <View className="w-24 h-32 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 mr-3">
@@ -74,10 +74,10 @@ export default function AnimeCard({
                             }}
                             className="p-2 rounded-full"
                             >
-                                <Star size={20} color={isFavorite ? "#ec4899" : "#d1d5db"} fill={isFavorite ? "#ec4899" : "none"} />
+                                <Star size={24} color={isFavorite ? "#ec4899" : "#d1d5db"} fill={isFavorite ? "#ec4899" : "none"} />
                             </Pressable>
                             {/* Map button */}
-                            <Link href={{ pathname: "/(tabs)/map", params: { animeId: anime.anime_id } }} asChild>
+                            <Link href={{ pathname: "/animeDetail/[id]", params: { id: anime.anime_id} }} push asChild>
                                 <Pressable onPress={(e) => e.stopPropagation()}
                                     className="p-2 rounded-full">
                                     <ChevronRight 
