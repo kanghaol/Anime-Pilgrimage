@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Anime } from "../models/Anime";
 import mongoose from "mongoose";
+import { STATUS_CODES } from "http";
 
 export const getAnimeList = async (req: Request, res: Response) => {
     try {
@@ -40,3 +41,20 @@ export const getAnimeList = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Error fetching anime list" });
     }
 };
+
+export const getAnime = async (req: Request, res: Response) => {
+    try {
+        const animeId = req.params.id;
+        if (!animeId) {
+            return res.status(400).json({ message: "Invalid anime ID" });
+        }
+        const anime = await Anime.findOne({anime_id: animeId});
+        if (!anime) {
+            return res.status(404).json({ message: "Anime not found" });
+        }
+        res.json({anime});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching anime details" });
+    }
+}

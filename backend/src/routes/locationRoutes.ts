@@ -1,9 +1,10 @@
 import express from "express";
-import { getLocationsByAnimeId } from "../controllers/locationController";
+import { getLocationsByAnimeId, getlocationsByLocationId } from "../controllers/locationController";
 
 
 const router = express.Router();
 
-router.get("/:anime_id", getLocationsByAnimeId);
+router.get("/LocationsByAnime/:id", getLocationsByAnimeId);
+router.get("/LocationById/:id", getlocationsByLocationId);
 
 export default router;

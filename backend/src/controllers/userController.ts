@@ -32,8 +32,32 @@ export const getUserFavoritesIds = async (req: Request, res: Response) => {
     }
 };
 
-export const toggleFavoriteAnime = async (req: Request, res: Response) => {
-    try { 
+export const addFavoriteAnime = async (req: Request, res: Response) => {
+    try {
+        const userUuid = (req as any).user.uuId;
+        const animeId = req.body.favorites;
+        const user = await User.findOne({ uuId: userUuid });
+        const anime = await Anime.findOne({ anime_id: animeId });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (!animeId) {
+            return res.status(400).json({ message: "Anime ID is required" });
+        }
+        if (!user.favorites.includes(animeId) && anime) {
+            user.favorites.push(animeId);
+            anime.favoriteCount += 1;
+            await anime.save();
+            await user.save();
+        }
+        res.status(200).json({ message: "Anime added to favorites" });
+    } catch (err) {
+        res.status(500).json({ message: "Error adding favorite anime" });
+    }
+};
+
+export const removeFavoriteAnime = async (req: Request, res: Response) => {
+    try {
         const userUuid = (req as any).user.uuId;
         const animeId = req.body.favorites;
         const user = await User.findOne({ uuId: userUuid });
@@ -51,22 +75,13 @@ export const toggleFavoriteAnime = async (req: Request, res: Response) => {
             if (anime && anime.favoriteCount > 0) {
                 anime.favoriteCount -= 1;
                 await anime.save();
-            } 
-            return res.status(200).json({ message: "Anime removed from favorites" });
-        } else {
-            user.favorites.push(animeId);
-            await user.save();
-            if (anime) {
-                anime.favoriteCount += 1;
-                await anime.save();
             }
-            return res.status(200).json({ message: "Anime added to favorites" });
         }
-
+        res.status(200).json({ message: "Anime removed from favorites" });
     } catch (err) {
-        res.status(500).json({ message: "Error toggling favorite anime" });
+        res.status(500).json({ message: "Error removing favorite anime" });
     }
-};
+}; 
 
 export const getUserProfile = async (req: Request, res: Response) => {
     try {

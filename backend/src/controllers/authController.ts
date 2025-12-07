@@ -28,7 +28,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { uuId: newUser.uuId, email: newUser.email },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     res.status(201).json({
@@ -60,7 +60,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { uuId: user.uuId, email: user.email },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     user.lastLogin = new Date();
