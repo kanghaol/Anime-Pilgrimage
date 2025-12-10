@@ -8,22 +8,24 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        background: "#F9FAFB",
+        background: "#EEECF3",
         primary: "#0EB8F0",
         secondary: "#6366F1",
-        text: "#111827",
+        text: "#1a1a1a",
         subtext: "#6B7280",
-        accent: "#F59E0B",
-        border: "#E5E7EB",
+        accent: "#0ea5e9",
+        cardbg: "#FBFBFB",
+        border: "#dddddd",
 
         // Dark equivalents (used via `dark:`)
-        darkBackground: "#17181A",
+        darkBackground: "#1A1A1A",
         darkPrimary: "#FFFFFF", 
         darkSecondary: "#818CF8",
-        darkText: "#F9FAFB",
+        darkText: "#F5F5F5",
         darkSubtext: "#9CA3AF",
-        darkAccent: "#FACC15",
-        darkBorder: "#1E293B",
+        darkAccent: "#8B0000",
+        darkCardbg: "#222222",
+        darkBorder: "#333333",
       },
     },
   },

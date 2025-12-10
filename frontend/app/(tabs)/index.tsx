@@ -78,7 +78,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white dark:bg-darkBackground">
+      <View className="flex-1 justify-center items-center bg-background dark:bg-darkBackground">
         <ActivityIndicator size="large" color="#6366F1" />
         <Text className="text-gray-500 mt-4">Loading anime...</Text>
       </View>
@@ -95,7 +95,7 @@ export default function Home() {
         <View className="flex-row justify-between items-center mb-4">
           <View className="flex-row items-center gap-2">
             <Sparkles color="#FFFFFF" size={24} />
-            <Text className="text-text dark:text-darkText text-2xl font-bold">
+            <Text className="text-white dark:text-darkAccent text-2xl font-bold">
               Anime Pilgrimage
             </Text>
           </View>
@@ -157,14 +157,14 @@ export default function Home() {
             {hasMore ? (
               <Pressable
                 onPress={loadMoreAnime}
-                className="bg-primary px-6 py-3 rounded-full"
+                className="bg-accent dark:bg-darkAccent px-6 py-3 rounded-full"
               >
                 <Text className="text-white text-center text-base font-semibold">
                   {loadingMore ? "Loading..." : "Load More"}
                 </Text>
               </Pressable>
             ) : (
-              <Text className="text-gray-400 mt-6">No more anime available</Text>
+              <Text className="text-subtext dark: dark:text-darkSubtext mt-6">No more anime available</Text>
             )}
           </View>
         )}

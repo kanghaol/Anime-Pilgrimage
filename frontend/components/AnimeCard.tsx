@@ -30,7 +30,7 @@ export default function AnimeCard({
                 className="mb-3"
             >
                 <Link href={{ pathname: "/animeDetail/[id]", params: {id:anime.anime_id}}} push asChild>
-                    <Pressable className="flex-row p-3 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <Pressable className="flex-row p-3 bg-cardbg dark:bg-darkCardbg rounded-2xl border border-border dark:border-darkBorder shadow-sm border-5">
                         {/* Poster Image */}
                         <View className="w-24 h-32 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 mr-3">
                             {anime.photo_url ?(

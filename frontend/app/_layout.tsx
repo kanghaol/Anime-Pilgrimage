@@ -39,7 +39,7 @@ export default function Layout() {
   return (
     <AuthProvider>
       <FavoritesProvider>
-        <StatusBar style="light"/>
+        <StatusBar style="auto"/>
         <RootNavigator />
       </FavoritesProvider>
     </AuthProvider>

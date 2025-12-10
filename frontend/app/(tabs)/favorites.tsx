@@ -42,11 +42,10 @@ export default function Favorites() {
       edges={["top", "left", "right"]}
       className="flex-1 bg-background dark:bg-darkBackground"
     >
-      <View className="absolute inset-0 bg-rose-500 dark:bg-gray-800" />
-      <View className="flex-row justify-between items-center mb-4 px-6 py-4 text-text dark:text-darkText">
+      <View className="flex-row justify-between items-center mb-4 px-6 py-4 text-text dark:text-darkText bg-rose-500/90 dark:bg-darkBackground">
         <View className="flex-row items-center gap-2">
           <Heart color="#FFFFFF" size={28} fill={"#FFFFFF"} />
-          <Text className="text-primary dark:text-darkPrimary text-2xl font-extrabold">
+          <Text className="text-primary dark:text-darkAccent text-2xl font-extrabold">
             Favorites
           </Text>
         </View>
@@ -58,11 +57,11 @@ export default function Favorites() {
           </Pressable>
         </Link>
       </View>
-      <View className="mb-4 px-6">
-        <Text className="text-primary dark:text-darkPrimary">
-          Your saved anime list
+      {/* <View className="mb-4 px-6">
+        <Text className="text-pink-500 font-bold">
+          You have {favoritesList.length} favorite
         </Text>
-      </View>
+      </View> */}
 
       {/* Favorites List */}
       <FlatList
