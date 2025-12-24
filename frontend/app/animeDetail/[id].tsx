@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView, Pressable, ActivityIndicator, Alert, } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { MotiView } from "moti";
-import { ArrowLeft, MapPin, Navigation, ArrowRight} from "lucide-react-native";
+import { ArrowLeft, MapPin, Navigation, ArrowRight, BookMarked} from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type anime = {
@@ -160,7 +160,7 @@ export default function AnimeDetailScreen() {
               ) : null}
               <View className="flex-row items-center gap-2 mt-3">
                 <MapPin color="#6366F1" size={20} />
-                <Text className="text-white/90">{anime.locations} filming locations</Text>
+                <Text className="text-white/90">{anime.locations} Reference locations</Text>
               </View>
             </View>
           </View>
@@ -195,10 +195,10 @@ export default function AnimeDetailScreen() {
                     from={{ opacity: 0, translateY: 10 }}
                     animate={{ opacity: 1, translateY: 0 }}
                     transition={{ delay: idx * 60 }}
-                    className="bg-background dark:bg-darkPrimary rounded-2xl overflow-hidden mb-4 shadow-sm"
+                    className="bg-white dark:bg-gray-700 rounded-2xl overflow-hidden mb-4 shadow-sm"
                   >
                     <View className="p-4">
-                      <View className="flex-row gap-4">
+                      <View className="flex-row gap-4 ">
                         {loc.photo_url ? (
                           <Image
                             source={{ uri: loc.photo_url }}
@@ -214,7 +214,7 @@ export default function AnimeDetailScreen() {
                         <View className="flex-1">
                           <View className="flex-row justify-between items-start">
                             <View className="flex-1">
-                              <Text className="font-bold text-lg text-text dark:text-darkText">
+                              <Text className="font-bold text-lg text-text dark:text-darkSecondary">
                                 {loc.name}
                               </Text>
                               <Text className="text-sm text-subtext dark:text-darkSubtext mt-1 ">
@@ -232,6 +232,7 @@ export default function AnimeDetailScreen() {
                               {/* Scene reference ABOVE description */}
                               {loc.scene_ref && loc.scene_ref.length > 0 && (
                                 <Text className="text-xs text-secondary mt-2">
+                                  <BookMarked size={18}></BookMarked>
                                   {loc.scene_ref.join(", ")}
                                 </Text>
                               )}

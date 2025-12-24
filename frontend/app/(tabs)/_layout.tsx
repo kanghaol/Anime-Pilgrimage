@@ -5,7 +5,6 @@ import React from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 
 export default function TabLayout() {
   // Hardcoded colors from your tailwind.config.js
@@ -30,7 +29,6 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
       }}
     >
-      <StatusBar style="auto"/>
       <Tabs.Screen
         name="index"
         options={{
