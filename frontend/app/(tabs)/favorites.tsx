@@ -9,11 +9,13 @@ import { useFavorites } from "@/hooks/useFavorites";
 import * as SecureStore from "expo-secure-store";
 import AnimeCard from "@/components/AnimeCard";
 
+const API_BASE = "http://192.168.0.152:5000/api";
+
 export default function Favorites() {
   const { isGuest, logout } = useAuth();
   const { favorites, toggleFavorite } = useFavorites(); 
   const [favoritesList, setFavoritesList] = useState<any[]>([]);
-  const API_BASE = "http://192.168.0.152:5000/api";
+ 
 
   useEffect(() => {
     const loadFavorites = async () => {

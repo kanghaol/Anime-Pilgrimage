@@ -56,12 +56,11 @@ export default function TabLayout() {
             if (isGuest) {
               e.preventDefault(); 
               Alert.alert(
-                "Warning",
-                "Favorites are only saved permanently for registered users.",
+                "⭐",
+                "Favorite saved! Sign up for a free account to keep it permanently and access your list anytime",
                 [
-                  { text: "Cancel", style: "cancel" },
-                  { text: "Register", onPress: () => router.replace("/register") },
-                  { text: "Login", onPress: () => router.replace("/login") },
+                  { text: "Continue as Guest", style: "cancel" },
+                  { text: "Sign Up & Save", onPress: () => router.replace("/register") },
                 ]
               );
             }

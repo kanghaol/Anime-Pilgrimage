@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable, Image, Platform } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import MapView, { Marker, UrlTile, Callout } from "react-native-maps";
+import { useColorScheme } from "nativewind"
 import * as Clipboard from "expo-clipboard";
 
 type Location = {
@@ -19,17 +20,40 @@ type Location = {
 
 const API_BASE = "http://192.168.0.152:5000/api";
 
+const LIGHT_TILES = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const DARK_TILES = "https://a.tile.opentopomap.org/{z}/{x}/{y}.png";
+
 export default function MapScreen() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
   const { location, locations } = useLocalSearchParams<{
     location?: string;
     locations?: string;
   }>();
 
   const [locationList, setLocationList] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [hasAllLocations, setHasAllLocations] = useState<boolean>(false);
+  const [fetchingAll, setFetchingAll] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
 
+
+  const fetchAllLocations = async () => {
+    if (hasAllLocations || fetchingAll) return;
+    try {
+      setFetchingAll(true);
+      const res = await fetch(`${API_BASE}/locations/all`);
+      const data = await res.json();
+      const all = Array.isArray(data.locations) ? data.locations : [];
+      setLocationList(all);
+      setHasAllLocations(true);
+    } catch (e) {
+      console.error("Fetch all locations error:", e);
+    } finally {
+      setFetchingAll(false);
+    }
+  };
   /* ---------------- LOAD DATA ---------------- */
   useEffect(() => {
     const load = async () => {
@@ -115,6 +139,7 @@ export default function MapScreen() {
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}
+        mapType="none"
         initialRegion={{
           latitude: 35.0,
           longitude: 135.0,
@@ -124,7 +149,7 @@ export default function MapScreen() {
       >
         {/* OpenStreetMap */}
         <UrlTile
-          urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          urlTemplate={isDark ? DARK_TILES : LIGHT_TILES}
           maximumZ={19}
         />
 
@@ -154,6 +179,26 @@ export default function MapScreen() {
           </Marker>
         ))}
       </MapView>
+
+      <View className="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded">
+        <Text className="text-[10px] text-white">
+          © OpenStreetMap contributors
+        </Text>
+      </View>
+      {/* View All Locations Button */}
+      <Pressable
+        onPress={fetchAllLocations}
+        disabled={fetchingAll || hasAllLocations}
+        className={`absolute top-14 right-4 px-4 py-2 rounded-full shadow-lg
+                    ${hasAllLocations
+                      ? "bg-gray-300 dark:bg-gray-700"
+                      : "bg-white/90 dark:bg-gray-800"}
+                  `}
+      >
+        <Text className="text-sm font-semibold text-gray-900 dark:text-white">
+          {fetchingAll ? "Loading…" : hasAllLocations ? "All Shown" : "View All Locations"}
+        </Text>
+      </Pressable>
       {/* FIX: crashing the app with copied address 
          Move the "Copied" alert HERE, outside the MapView.
          This will appear at the bottom of the screen.

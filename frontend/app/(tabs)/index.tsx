@@ -21,10 +21,6 @@ export default function Home() {
 
   const { isGuest, logout, isLoggedIn } = useAuth();
   const { favorites, toggleFavorite } = useFavorites();
-
-  // if (!isLoggedIn && !isGuest) {
-  //   return <Redirect href="/login" />;
-  // }
   
   const fetchAnimeList = async (cursorId?: string, cursorPopularity?: number) => {
     try {
@@ -106,7 +102,7 @@ export default function Home() {
               className="w-10 h-10 bg-white/20 dark:bg-darkPrimary rounded-full justify-center items-center"
               onPress={logout}
             >
-              <User color="white" size={20} />
+              <User color="#FF6F61" size={20} />
             </Pressable>
           </Link>
         </View>
