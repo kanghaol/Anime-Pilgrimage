@@ -43,7 +43,6 @@ app-example
 # generated native folders
 /ios
 /android
-
+.idea
 .env
-.animeCollection.json
-.locationCollection.json
+
