@@ -86,14 +86,14 @@ export default function Register() {
                     placeholderTextColor="#999"
                     value={name}
                     onChangeText={setName}
-                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-text dark:text-darkText"                
+                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-darkText dark:text-text"                
                 />
                 <TextInput 
                     placeholder="Email"
                     placeholderTextColor="#999"
                     value={email}
                     onChangeText={setEmail}
-                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-text dark:text-darkText"
+                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-darkText dark:text-text"
                 />
                 <TextInput 
                     placeholder="Password"
@@ -101,7 +101,7 @@ export default function Register() {
                     secureTextEntry 
                     value={password}
                     onChangeText={setPassword}
-                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-text dark:text-darkText"
+                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-darkText dark:text-text"
                 />
                 <TextInput 
                     placeholder="Confirm Password"
@@ -109,7 +109,7 @@ export default function Register() {
                     secureTextEntry 
                     value={confirm}
                     onChangeText={setConfirm}
-                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-text dark:text-darkText"
+                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-darkText dark:text-text"
                 />
 
                 <Pressable onPress={handleRegister} className="bg-primary rounded-xl py-3 mt-2">

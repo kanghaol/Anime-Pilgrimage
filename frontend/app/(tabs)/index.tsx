@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
 import { router } from "expo-router";
+import { useColorScheme } from "nativewind"
 import AnimeCard from "@/components/AnimeCard";
 
 const API_BASE = "http://192.168.0.152:5000/api";
@@ -21,6 +22,9 @@ export default function Home() {
 
   const { isGuest, logout, isLoggedIn } = useAuth();
   const { favorites, toggleFavorite } = useFavorites();
+
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
   
   const fetchAnimeList = async (cursorId?: string, cursorPopularity?: number) => {
     try {
@@ -99,10 +103,10 @@ export default function Home() {
           {/* Profile */}
           <Link href="/profile" asChild>
             <Pressable
-              className="w-10 h-10 bg-white/20 dark:bg-darkPrimary rounded-full justify-center items-center"
+              className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
               onPress={logout}
             >
-              <User color="#FF6F61" size={20} />
+              <User color={isDark ? "#e5e7eb" : "#374151"} size={22} />
             </Pressable>
           </Link>
         </View>

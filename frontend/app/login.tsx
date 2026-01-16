@@ -81,7 +81,7 @@ export default function Login() {
                     placeholderTextColor="#999"
                     value={email}
                     onChangeText={setEmail}
-                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-text dark:text-darkText">
+                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-darkText dark:text-text">
                 </TextInput>
                 {/* Password */}
                 <TextInput
@@ -90,7 +90,7 @@ export default function Login() {
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
-                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-text dark:text-darkText"
+                    className="bg-gray-500 dark:bg-darkPrimary rounded-xl px-4 py-3 mb-4 text-darkText dark:text-text"
                 >
                 </TextInput>
                 {/* Login button */}

@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from "../hooks/useAuth";
 import { FavoritesProvider } from "@/hooks/useFavorites";
 import Splash from "@/components/ui/Splash";
 import { StatusBar } from "expo-status-bar";
-import { Redirect } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import './globals.css';
 
 function RootNavigator() {
@@ -38,10 +38,12 @@ function RootNavigator() {
 export default function Layout() {
   return (
     <AuthProvider>
-      <FavoritesProvider>
-        <StatusBar style="auto"/>
-        <RootNavigator />
-      </FavoritesProvider>
+      <GestureHandlerRootView>
+        <FavoritesProvider>
+          <StatusBar style="auto"/>
+          <RootNavigator />
+        </FavoritesProvider>
+      </GestureHandlerRootView>
     </AuthProvider>
   );
 }

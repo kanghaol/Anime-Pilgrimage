@@ -130,7 +130,7 @@ export default function AnimeDetailScreen() {
             accessibilityLabel="Go back"
           >
             <ArrowLeft color="#fff" size={24} />
-            <Text className="text-white text-lg">Back</Text>
+            <Text className="text-white text-lg font-bold">Back</Text>
           </Pressable>
 
           <View className="flex-row gap-4">
@@ -178,7 +178,7 @@ export default function AnimeDetailScreen() {
 
                 <Pressable
                   onPress={() => viewOnMapAll()}
-                  className="px-3 py-2 rounded-full bg-secondary"
+                  className="px-3 py-2 rounded-full bg-secondary "
                   accessibilityLabel="View all on map"
                 >
                   <View className="flex-row items-center gap-2">
