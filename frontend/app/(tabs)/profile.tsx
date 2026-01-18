@@ -164,7 +164,7 @@ export default function Profile() {
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         {/* HEADER */}
         <LinearGradient
-          colors={["#6366f1", "#8b5cf6"]}
+          colors={isDark ?["#1E1B4B", "#4C1D95"] : ["#6190E8", "#A7BFE8"]}
           className="px-6 pt-14 pb-12 rounded-b-3xl"
         >
           <Animated.View entering={FadeInDown.duration(500)} className="items-center">

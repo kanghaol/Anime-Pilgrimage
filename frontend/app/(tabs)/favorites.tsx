@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Heart, User } from "lucide-react-native";
 import { MotiView } from "moti";
 import { useColorScheme } from "nativewind"
+import { LinearGradient } from 'expo-linear-gradient'
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
 import * as SecureStore from "expo-secure-store";
@@ -65,23 +66,25 @@ export default function Favorites() {
         edges={["top", "left", "right"]}
         className="flex-1 bg-background dark:bg-darkBackground"
       >
-        <View className="px-6 pt-7 pb-7 bg-white dark:bg-black">
-          <View className="flex-row justify-between items-center ">
-            <View className="flex-row items-center gap-3">
-              <Heart color={isDark ? "#f472b6" : "#ec4899"} size={22} />
-              <Text className="items-center justify-center text-bold text-lg text-text dark:text-darkText">
-                Favorites List
-              </Text>
-            </View>
+        <LinearGradient colors={isDark ? ['#FF758C', '#FF7EB3'] : ['#FF9A9E', '#FAD0C4']}>
+          <View className="px-6 pt-7 pb-7 ">
+            <View className="flex-row justify-between items-center ">
+              <View className="flex-row items-center gap-3">
+                <Heart color={isDark ? "#B71C4D" : "#ec4899"} size={22} />
+                <Text className="items-center justify-center text-bold text-lg text-text dark:text-darkText">
+                  Favorites List
+                </Text>
+              </View>
 
-            {/* Profile */}
-            <Link href="/profile" asChild>
-              <Pressable className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center">
-                <User color={isDark ? "#e5e7eb" : "#374151"} size={22} />
-              </Pressable>
-            </Link>
+              {/* Profile */}
+              <Link href="/profile" asChild>
+                <Pressable className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center">
+                  <User color={isDark ? "#e5e7eb" : "#374151"} size={22} />
+                </Pressable>
+              </Link>
+            </View>
           </View>
-        </View>
+        </LinearGradient>
         <View className="flex-1 items-center justify-center px-8">
           <Heart size={48} color="#9ca3af" />
           <Text className="text-lg font-semibold text-gray-700 dark:text-gray-300 mt-4">
@@ -110,24 +113,25 @@ export default function Favorites() {
       edges={["top", "left", "right"]}
       className="flex-1 bg-background dark:bg-darkBackground"
     >
-      <View className="px-6 pt-7 pb-7 bg-white dark:bg-black">
-        <View className="flex-row justify-between items-center ">
-          <View className="flex-row items-center gap-3">
-            <Heart color={isDark ? "#f472b6" : "#ec4899"} size={22} />
-            <Text className="items-center justify-center text-bold text-lg text-text dark:text-darkText">
-              Favorites List
-            </Text>
+      <LinearGradient colors={isDark ? ['#FF758C', '#FF7EB3'] : ['#FF9A9E', '#FAD0C4']}>
+        <View className="px-6 pt-7 pb-7 ">
+          <View className="flex-row justify-between items-center ">
+            <View className="flex-row items-center gap-3">
+              <Heart color={isDark ? "#B71C4D" : "#ec4899"} size={22} />
+              <Text className="items-center justify-center text-bold text-lg text-text dark:text-darkText">
+                Favorites List
+              </Text>
+            </View>
+
+            {/* Profile */}
+            <Link href="/profile" asChild>
+              <Pressable className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center">
+                <User color={isDark ? "#e5e7eb" : "#374151"} size={22} />
+              </Pressable>
+            </Link>
           </View>
-
-          {/* Profile */}
-          <Link href="/profile" asChild>
-            <Pressable className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center">
-              <User color={isDark ? "#e5e7eb" : "#374151"} size={22} />
-            </Pressable>
-          </Link>
         </View>
-      </View>
-
+      </LinearGradient>
       {/* Favorites List */}
       <FlatList
         data={favoritesList}
