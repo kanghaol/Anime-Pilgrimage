@@ -2,7 +2,7 @@
 
 ## 🎬 Demo
 
-![Demo Preview] (Demo/anime-pilgrimage-preview.gif)
+![Demo Preview](Demo/anime-pilgrimage-preview.gif)
 
 [▶️ Watch the full demo video (1:17)](Demo/anime-pilgrimage-demo.mp4)
 
