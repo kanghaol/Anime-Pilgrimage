@@ -1,14 +1,14 @@
 import { View, Text, Pressable, ScrollView, Alert } from 'react-native';
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Sparkles, User, Trash2, Moon, LogOut, Mail, Shield, MapPin, Heart, Film, Sun, Navigation, Plus } from "lucide-react-native";
 import { router, useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient'
 import * as SecureStore from "expo-secure-store";
-import { useColorScheme } from "nativewind"
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useAuth } from '@/hooks/useAuth';
 import InfoRow from '@/components/InfoRow';
+import { useTheme } from '@/hooks/theme-context';
 
 
 type UserProfile = {
@@ -23,8 +23,7 @@ export default function Profile() {
   const { logout, isGuest } = useAuth();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const { isDark, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     await logout();
@@ -164,7 +163,7 @@ export default function Profile() {
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         {/* HEADER */}
         <LinearGradient
-          colors={isDark ?["#1E1B4B", "#4C1D95"] : ["#6190E8", "#A7BFE8"]}
+          colors={isDark ? ["#1E1B4B", "#4C1D95"] : ["#6190E8", "#A7BFE8"]}
           className="px-6 pt-14 pb-12 rounded-b-3xl"
         >
           <Animated.View entering={FadeInDown.duration(500)} className="items-center">
@@ -221,6 +220,34 @@ export default function Profile() {
               </View>
             )}
           </Animated.View> */}
+          {/* THEME TOGGLE */}
+          <Animated.View
+            entering={FadeInDown.delay(300)}
+            className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow border border-gray-100 dark:border-gray-700 mb-4"
+          >
+            <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+              Preferences
+            </Text>
+
+            <Pressable
+              onPress={toggleTheme}
+              className="flex-row items-center justify-between py-3"
+            >
+              <View className="flex-row items-center">
+                {isDark ? (
+                  <Moon size={20} color="#818CF8" />
+                ) : (
+                  <Sun size={20} color="#f59e0b" />
+                )}
+                <Text className="ml-3 text-gray-900 dark:text-gray-100 font-medium">
+                  {isDark ? "Dark Mode" : "Light Mode"}
+                </Text>
+              </View>
+              <Text className="text-sm text-gray-700 dark:text-gray-100">
+                Tap to switch
+              </Text>
+            </Pressable>
+          </Animated.View>
 
           {/* ACCOUNT INFO */}
           <Animated.View
@@ -231,7 +258,7 @@ export default function Profile() {
               Account Information
             </Text>
 
-            <InfoRow icon={<Mail size={18}/>} label="Email" value={user.email} />
+            <InfoRow icon={<Mail size={18} />} label="Email" value={user.email} />
           </Animated.View>
 
           {/* LOGOUT */}

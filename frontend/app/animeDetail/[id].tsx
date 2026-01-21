@@ -5,6 +5,7 @@ import { useLocalSearchParams, router } from "expo-router";
 import { MotiView } from "moti";
 import { ArrowLeft, MapPin, Navigation, ArrowRight, BookMarked} from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {useTheme} from "@/hooks/theme-context";
 
 type anime = {
   anime_id: string;
@@ -37,7 +38,8 @@ export default function AnimeDetailScreen() {
   const [locations, setLocations] = useState<any[]>([]);
   const [animeLoading, setAnimeLoading] = useState(true);
   const [locationsLoading, setLocationsLoading] = useState(true);
-
+  const { isDark } = useTheme();
+  
   const fetchAnimeData = async () => {
     try {
       setAnimeLoading(true);

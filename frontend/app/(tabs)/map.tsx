@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, ActivityIndicator, Pressable, Image, Platform } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
-import MapView, { Marker, UrlTile, Callout } from "react-native-maps";
-import { useColorScheme } from "nativewind"
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { View, Text, ActivityIndicator, Pressable, Image } from "react-native";
+import { useLocalSearchParams, router, useFocusEffect } from "expo-router";
+import MapView, { Marker, UrlTile, Circle } from "react-native-maps";
+import { useColorScheme } from "nativewind";
 import * as Clipboard from "expo-clipboard";
+import * as Location from "expo-location";
 
 type Location = {
   anime_id: string;
@@ -18,75 +19,117 @@ type Location = {
   travel_tips: string;
 };
 
+type MapMode = "PARAMS" | "DEFAULT" | "ALL";
+
 const API_BASE = "http://192.168.0.152:5000/api";
 
 const LIGHT_TILES = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
 const DARK_TILES = "https://a.tile.opentopomap.org/{z}/{x}/{y}.png";
 
 export default function MapScreen() {
+  const [mapMode, setMapMode] = useState<MapMode>("DEFAULT");
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const { location, locations } = useLocalSearchParams<{
     location?: string;
     locations?: string;
   }>();
-
   const [locationList, setLocationList] = useState<Location[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [hasAllLocations, setHasAllLocations] = useState<boolean>(false);
   const [fetchingAll, setFetchingAll] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
+  const [skipAutoCenter, setSkipAutoCenter] = useState<boolean>(false);
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+  const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null);
 
+  /* ---------------- FETCH ALL LOCATIONS ---------------- */
 
   const fetchAllLocations = async () => {
-    if (hasAllLocations || fetchingAll) return;
     try {
+      setLoading(true);
       setFetchingAll(true);
+      setMapMode("ALL");
+      setSkipAutoCenter(true);
+      centerOnJapan();
       const res = await fetch(`${API_BASE}/locations/all`);
       const data = await res.json();
-      const all = Array.isArray(data.locations) ? data.locations : [];
-      setLocationList(all);
-      setHasAllLocations(true);
+      setLocationList(Array.isArray(data.locations) ? data.locations : []);
     } catch (e) {
-      console.error("Fetch all locations error:", e);
+      console.error("Fetch all error:", e);
     } finally {
       setFetchingAll(false);
+      setLoading(false);
     }
   };
-  /* ---------------- LOAD DATA ---------------- */
+
+  /* ---------------- LOAD some locations base on request DATA  ---------------- */
   useEffect(() => {
-    const load = async () => {
-      try {
-        let parsed: Location[] | null = null;
+    if (location) {
+      setMapMode("PARAMS");
+      setLocationList([JSON.parse(location)]);
+      setLoading(false);
+      return;
+    }
 
-        if (location) {
-          parsed = [JSON.parse(location)];
-        } else if (locations) {
-          parsed = JSON.parse(locations);
-        }
-
-        if (parsed) {
-          setLocationList(parsed);
-          setLoading(false);
-          return;
-        }
-
-        const res = await fetch(`${API_BASE}/locations/all`);
-        const data = await res.json();
-        setLocationList(Array.isArray(data.locations) ? data.locations : []);
-        setLoading(false);
-      } catch (e) {
-        console.error("Map load error:", e);
-        setLoading(false);
-      }
-    };
-
-    load();
+    if (locations) {
+      setMapMode("PARAMS");
+      setLocationList(JSON.parse(locations));
+      setLoading(false);
+      return;
+    }
   }, [location, locations]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (mapMode === "DEFAULT") {
+        //all location as default for now
+        fetchAllLocations();
+      }
+    }, [mapMode])
+  );
+
+
+  /* ---------------- GET USER LOCATION ---------------- */
+  useEffect(() => {
+    let subscription: Location.LocationSubscription | null = null;
+
+    const startTracking = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.warn("Location permission denied");
+        return;
+      }
+
+      subscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.Balanced,
+          timeInterval: 5000,
+          distanceInterval: 10,
+        },
+        (loc) => {
+          setUserLocation({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          });
+          setLocationAccuracy(loc.coords.accuracy ?? null);
+        }
+      );
+    };
+
+    startTracking();
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
   /* ---------------- CENTER ---------------- */
   useEffect(() => {
+    if (!mapRef.current) return;
+    if (skipAutoCenter) return;
     //added a check inside the hook instead of skipping the hook entirely
     if (!loading && locationList.length > 0 && mapRef.current) {
       const coords = locationList.map((l) => ({
@@ -100,6 +143,23 @@ export default function MapScreen() {
       });
     }
   }, [locationList, loading]);
+
+  const centerOnJapan = () => {
+    if (!mapRef.current) return;
+
+    mapRef.current.animateToRegion(
+      {
+        latitude: 36.2048,
+        longitude: 138.2529,
+        latitudeDelta: 15,
+        longitudeDelta: 15,
+      },
+      600
+    );
+    setTimeout(() => {
+      setSkipAutoCenter(false);
+    }, 600);
+  };
 
   /* ---------------- LOADING ---------------- */
   if (loading) {
@@ -147,11 +207,11 @@ export default function MapScreen() {
           longitudeDelta: 10,
         }}
       >
-        {/* OpenStreetMap */}
-        <UrlTile
+        {/* OpenStreetMap tile texture optional*/}
+        {/* <UrlTile
           urlTemplate={isDark ? DARK_TILES : LIGHT_TILES}
           maximumZ={19}
-        />
+        /> */}
 
         {/* Markers */}
         {locationList.map((loc) => (
@@ -178,6 +238,25 @@ export default function MapScreen() {
             </View>
           </Marker>
         ))}
+        {/* USER LOCATION */}
+        {userLocation && (
+          <>
+            {/* Accuracy circle */}
+            {locationAccuracy && (
+              <Circle
+                center={userLocation}
+                radius={locationAccuracy}
+                strokeColor="rgba(59,130,246,0.4)"
+                fillColor="rgba(59,130,246,0.15)"
+              />
+            )}
+
+            {/* User marker */}
+            <Marker coordinate={userLocation} anchor={{ x: 0.5, y: 0.5 }}>
+              <View className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white" />
+            </Marker>
+          </>
+        )}
       </MapView>
 
       <View className="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded">
@@ -188,17 +267,39 @@ export default function MapScreen() {
       {/* View All Locations Button */}
       <Pressable
         onPress={fetchAllLocations}
-        disabled={fetchingAll || hasAllLocations}
+        disabled={mapMode === "ALL" || fetchingAll}
         className={`absolute top-14 right-4 px-4 py-2 rounded-full shadow-lg
-                    ${hasAllLocations
-                      ? "bg-gray-300 dark:bg-gray-700"
-                      : "bg-white/90 dark:bg-gray-800"}
+                    ${mapMode === "ALL"
+            ? "bg-gray-300 dark:bg-gray-700"
+            : "bg-white/90 dark:bg-gray-800"}
                   `}
       >
         <Text className="text-sm font-semibold text-gray-900 dark:text-white">
-          {fetchingAll ? "Loading…" : hasAllLocations ? "All Shown" : "View All Locations"}
+          {fetchingAll ? "Loading…" : mapMode === "ALL" ? "All Shown" : "View All Locations"}
         </Text>
       </Pressable>
+      {/* Center on User Button */}
+      {userLocation && (
+        <Pressable
+
+          onPress={() => {
+            mapRef.current?.animateToRegion(
+              {
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              },
+              500
+            );
+          }}
+          className="absolute top-28 right-4 px-4 py-2 rounded-full bg-indigo-600 shadow-lg"
+        >
+          <Text className="text-white font-semibold text-sm">
+            Center on Me
+          </Text>
+        </Pressable>
+      )}
       {/* FIX: crashing the app with copied address 
          Move the "Copied" alert HERE, outside the MapView.
          This will appear at the bottom of the screen.

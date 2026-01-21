@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
 type FavoritesContextType = {
-  favorites: string[];
+  favorites: string[]; // array of anime IDs that are favorited
   toggleFavorite: (id: string, isGuest: boolean) => void;
 };
 
@@ -19,9 +19,10 @@ export const FavoritesProvider = ({ children }: FavoritesProviderProps) => {
 
   useEffect(() => {
     const loadFavorites = async () => {
+      // Load favorites ids list from backend if logged in, else from AsyncStorage for guest
       const token = await SecureStore.getItemAsync("token");
       if (token) {
-        const res = await fetch(`${API_BASE}/user/favorites/ids`, {
+        const res = await fetch(`${API_BASE}/user/favorites/getIds`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -59,7 +60,8 @@ export const FavoritesProvider = ({ children }: FavoritesProviderProps) => {
     const method = isFavorited ? "DELETE" : "PUT";
 
     try {
-      const res = await fetch(`${API_BASE}/user/favorites`, {
+      // add or remove favorite animeId from user's favorites list in backend
+      const res = await fetch(`${API_BASE}/user/favorites-id`, {
         method,
         headers: {
           "Content-Type": "application/json",

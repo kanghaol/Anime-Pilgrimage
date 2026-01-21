@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth"
 import * as SecureStore from "expo-secure-store";
 import uuid from "react-native-uuid"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useTheme } from "../hooks/theme-context"
 
 const API_BASE = "http://192.168.0.152:5000/api"
 
@@ -14,6 +15,7 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const { isDark } = useTheme();
 
     const handleLogin = async () => {
         if (!email || !password) {

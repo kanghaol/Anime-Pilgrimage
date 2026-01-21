@@ -4,7 +4,6 @@ import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Heart, User } from "lucide-react-native";
 import { MotiView } from "moti";
-import { useColorScheme } from "nativewind"
 import { LinearGradient } from 'expo-linear-gradient'
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -12,7 +11,7 @@ import * as SecureStore from "expo-secure-store";
 import AnimeCard from "@/components/AnimeCard";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Animated from "react-native-reanimated";
-
+import {useTheme} from '@/hooks/theme-context';
 
 
 const API_BASE = "http://192.168.0.152:5000/api";
@@ -21,8 +20,7 @@ export default function Favorites() {
   const { isGuest, logout } = useAuth();
   const { favorites, toggleFavorite } = useFavorites();
   const [favoritesList, setFavoritesList] = useState<any[]>([]);
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const { isDark } = useTheme();
 
   const renderRightActions = () => {
     return(
@@ -43,7 +41,7 @@ export default function Favorites() {
       const token = await SecureStore.getItemAsync("token");
       if (!token) return;
 
-      const res = await fetch(`${API_BASE}/user/favorites`, {
+      const res = await fetch(`${API_BASE}/user/favorites-anime-objects`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -58,7 +56,7 @@ export default function Favorites() {
       }
     };
     loadFavorites();
-  }, [isGuest, favorites]);
+  }, [favorites]);
 
   if (favoritesList.length === 0) {
     return (

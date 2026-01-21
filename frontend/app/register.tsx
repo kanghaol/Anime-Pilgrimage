@@ -5,6 +5,7 @@ import { MotiView} from "moti";
 import * as SecureStore from "expo-secure-store";
 import { useAuth } from "../hooks/useAuth"
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "../hooks/theme-context";
 
 const API_BASE = "http://192.168.0.152:5000/api"
 
@@ -15,6 +16,7 @@ export default function Register() {
     const [confirm, setConfirm] = useState("");
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
+    const { isDark } = useTheme();
 
     const isValidLength = password.length >= 6;
 

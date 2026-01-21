@@ -2,6 +2,7 @@
 import { Stack } from "expo-router";
 import { AuthProvider, useAuth } from "../hooks/useAuth";
 import { FavoritesProvider } from "@/hooks/useFavorites";
+import { ThemeProvider } from "@/hooks/theme-context";
 import Splash from "@/components/ui/Splash";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -37,13 +38,15 @@ function RootNavigator() {
 
 export default function Layout() {
   return (
-    <AuthProvider>
-      <GestureHandlerRootView>
-        <FavoritesProvider>
-          <StatusBar style="auto"/>
-          <RootNavigator />
-        </FavoritesProvider>
-      </GestureHandlerRootView>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <GestureHandlerRootView>
+          <FavoritesProvider>
+            <StatusBar style="auto"/>
+            <RootNavigator />
+          </FavoritesProvider>
+        </GestureHandlerRootView>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
