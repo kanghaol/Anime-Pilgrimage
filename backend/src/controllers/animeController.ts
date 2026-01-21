@@ -57,4 +57,26 @@ export const getAnime = async (req: Request, res: Response) => {
         console.error(err);
         res.status(500).json({ message: "Error fetching anime details" });
     }
-}
+};
+
+export const searchAnime = async (req: Request, res: Response) => {
+    try {
+        const q = req.query.q as string;
+        if (!q || q.trim().length === 0) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+
+        const query = q.trim();
+        const animeList = await Anime.find({
+            $or: [
+                { title: { $regex: query, $options: "i" } },
+                { studio: { $regex: query, $options: "i" } }
+            ]
+        }).lean();
+
+        res.json(animeList);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error searching anime" });
+    }
+};

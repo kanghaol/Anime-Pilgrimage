@@ -3,7 +3,7 @@ import { User } from "../models/User";
 import { Anime } from "../models/Anime";
 
 /*return list of favorite anime objects*/
-export const getUserFavorites = async (req: Request, res: Response) => {
+export const getUserFavoritesAnimeObjects = async (req: Request, res: Response) => {
     try {
         const userUuid = (req as any).user.uuId;
         const user = await User.findOne({ uuId: userUuid }).lean();
@@ -92,9 +92,6 @@ export const removeFavoriteAnime = async (req: Request, res: Response) => {
             user.favorites.filter(fav => fav.animeId !== animeId)
         );
 
-        await user.save();
-
-
         if (user.favorites.length !== before) {
             await user.save();
 
@@ -155,5 +152,43 @@ export const migrateGuestUser = async (req: Request, res: Response) => {
         res.status(200).json({ message: "Guest user migrated successfully" });
     } catch (err) {
         res.status(500).json({ message: "Error migrating guest user" });
+    }
+};
+
+export const getTheme = async (req: Request, res: Response) => {
+    try {
+        const userUuid = (req as any).user.uuId;
+        const user = await User.findOne({ uuId: userUuid }).lean();
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ theme: user.theme });
+    } catch (err) {
+        res.status(500).json({ message: "Error retrieving theme" });
+    }
+};
+
+export const setTheme = async (req: Request, res: Response) => {
+    try {
+        const userUuid = (req as any).user.uuId;
+        const theme = req.body.theme;
+
+        if (!theme || (theme !== "light" && theme !== "dark")) {
+            return res.status(400).json({ message: "Invalid theme" });
+        }
+
+        const user = await User.findOneAndUpdate(
+            { uuId: userUuid },
+            { $set: { theme } },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ theme:user.theme });
+    } catch (err) {
+        res.status(500).json({ message: "Error setting theme" });
     }
 };

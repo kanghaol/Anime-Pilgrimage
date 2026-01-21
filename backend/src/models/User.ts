@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     favorites: { type: [favoriteSchema], default:[] },
     createdAt: { type: Date, default: Date.now },
     lastLogin: { type: Date, default: Date.now },
+    theme: { type: String, default: "light" },
 });
 
 userSchema.index({ uuId: 1 }, { unique: true });
