@@ -16,16 +16,19 @@ export default function Register() {
     const [confirm, setConfirm] = useState("");
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
-    const { isDark } = useTheme();
 
-    const isValidLength = password.length >= 6;
+    const isValidStrength = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{6,18}$/.test(password); 
+    const isValidEmail = /^\S+@\S+\.\S+$/.test(email);
 
     const handleRegister = async () =>{
         if(!email || !password || !confirm || !name){
             return Alert.alert("Missing fields", "Fill out all information");
         }
-        if (!isValidLength){
-            return Alert.alert("Weak password", "Password must be at least 6 characters");
+        if (!isValidEmail){
+            return Alert.alert("Invalid email", "Please enter a valid email address");
+        }
+        if (!isValidStrength){
+            return Alert.alert("Weak password", "Password must be at least 6 characters up to 18 characters and contain at least one letter, one number, and one special character");
         }
         if(password !== confirm){
             return Alert.alert("Mismatch", "Passwords do not match");
